@@ -1,8 +1,10 @@
 import { useState } from "react";
 import ResumeUpload from "./components/ResumeUpload";
+import JobMatch from "./components/JobMatch";
 
 function App() {
   const [resumeData, setResumeData] = useState(null);
+  const [showJobs, setShowJobs] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -13,11 +15,15 @@ function App() {
         <p className="text-gray-400 text-xs">Your Daily Job Co-Pilot</p>
       </div>
 
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 -mt-16">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 py-10 -mt-16">
 
-        {!resumeData ? (
+        {/* Step 1: Upload Resume */}
+        {!resumeData && (
           <ResumeUpload onUploadSuccess={setResumeData} />
-        ) : (
+        )}
+
+        {/* Step 2: Skills + Match Jobs */}
+        {resumeData && !showJobs && (
           <div className="bg-gray-800 rounded-2xl p-8 w-full max-w-2xl">
 
             {/* Success Header */}
@@ -39,20 +45,15 @@ function App() {
                 Skills Found ({resumeData.total_skills})
               </h3>
               <div className="flex flex-wrap gap-2">
-                {resumeData.skills_found && resumeData.skills_found.length > 0 ? (
+                {resumeData.skills_found &&
                   resumeData.skills_found.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full font-medium"
+                      className="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full"
                     >
                       {skill}
                     </span>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-sm">
-                    No matching skills found. Try a more detailed resume.
-                  </p>
-                )}
+                  ))}
               </div>
             </div>
 
@@ -72,6 +73,14 @@ function App() {
               </div>
             </div>
 
+            {/* Match Jobs Button */}
+            <button
+              onClick={() => setShowJobs(true)}
+              className="w-full py-3 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition-all mb-3"
+            >
+              Find Matching Jobs 🎯
+            </button>
+
             {/* Upload Another */}
             <button
               onClick={() => setResumeData(null)}
@@ -82,6 +91,20 @@ function App() {
 
           </div>
         )}
+
+        {/* Step 3: Job Matches */}
+        {resumeData && showJobs && (
+          <div className="w-full max-w-3xl">
+            <button
+              onClick={() => setShowJobs(false)}
+              className="mb-6 text-gray-400 hover:text-white text-sm"
+            >
+              ← Back to Skills
+            </button>
+            <JobMatch skills={resumeData.skills_found || []} />
+          </div>
+        )}
+
       </div>
     </div>
   );
