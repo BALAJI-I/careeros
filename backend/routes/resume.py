@@ -36,7 +36,22 @@ async def upload_resume(file: UploadFile = File(...)):
             detail="Could not extract text from PDF"
         )
 
-    # Save to MongoDB
+    # Check if resume already exists
+    existing = resumes_collection.find_one(
+        {"filename": file.filename}
+    )
+
+    if existing:
+        return {
+            "filename": file.filename,
+            "status": "success",
+            "text": text,
+            "pages": num_pages,
+            "word_count": len(text.split()),
+            "resume_id": str(existing["_id"])
+        }
+
+    # Save new resume to MongoDB
     resume_doc = {
         "filename": file.filename,
         "text": text,

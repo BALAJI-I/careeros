@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function JobMatch({ skills }) {
+function JobMatch({ skills, resumeId }) {
   const [jobs, setJobs] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,8 +13,8 @@ function JobMatch({ skills }) {
     const fetchJobs = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:8000/jobs/match",
-          { skills }
+            "http://localhost:8000/jobs/match",
+            { skills, resume_id: resumeId }
         );
         setJobs(res.data.jobs);
         setFiltered(res.data.jobs);

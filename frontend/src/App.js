@@ -101,7 +101,10 @@ function App() {
             >
               ← Back to Skills
             </button>
-            <JobMatch skills={resumeData.skills_found || []} />
+            <JobMatch
+              skills={resumeData.skills_found || []}
+              resumeId={resumeData.resume_id}
+            />
           </div>
         )}
 

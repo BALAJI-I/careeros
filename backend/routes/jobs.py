@@ -1,6 +1,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
+from database import jobs_collection
+from bson import ObjectId
+from datetime import datetime
 
 router = APIRouter()
 
@@ -209,6 +212,7 @@ JOBS_DB = [
 
 class SkillsInput(BaseModel):
     skills: List[str]
+    resume_id: str = None
 
 @router.post("/match")
 def match_jobs(data: SkillsInput):
@@ -247,6 +251,25 @@ def match_jobs(data: SkillsInput):
 
     results.sort(key=lambda x: x["match_percent"], reverse=True)
 
+    # Save to MongoDB — no duplicates
+    if data.resume_id:
+        try:
+            existing_job = jobs_collection.find_one(
+                {"resume_id": data.resume_id}
+            )
+            if not existing_job:
+                jobs_collection.insert_one({
+                    "resume_id": data.resume_id,
+                    "total_jobs": len(results),
+                    "apply_now": len([r for r in results if r["decision"] == "Apply Now"]),
+                    "apply_learn": len([r for r in results if r["decision"] == "Apply + Learn"]),
+                    "prepare_first": len([r for r in results if r["decision"] == "Prepare First"]),
+                    "top_matches": results[:5],
+                    "created_at": datetime.now()
+                })
+        except Exception as e:
+            print(f"Error saving job matches: {e}")
+
     return {
         "status": "success",
         "total_jobs": len(results),
@@ -255,4 +278,8 @@ def match_jobs(data: SkillsInput):
 
 @router.get("/list")
 def list_jobs():
-    return {"status": "success", "total_jobs": len(JOBS_DB), "jobs": JOBS_DB}
+    return {
+        "status": "success",
+        "total_jobs": len(JOBS_DB),
+        "jobs": JOBS_DB
+    }
