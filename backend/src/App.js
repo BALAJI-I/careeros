@@ -47,7 +47,7 @@ function App() {
               <h3 className="text-gray-400 text-xs font-bold mb-2 uppercase">
                 Extracted Text Preview
               </h3>
-              <p className="text-gray-300 text-sm leading-relaxed">
+              <p className="text-gray-300 text-sm leading-relaxed line-clamp-6">
                 {resumeData.text.slice(0, 500)}...
               </p>
             </div>
