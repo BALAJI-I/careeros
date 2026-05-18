@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.resume import router as resume_router
+from routes.skills import router as skills_router
 
 app = FastAPI(title="CareerOS API")
 
@@ -14,6 +15,7 @@ app.add_middleware(
 
 # Routes
 app.include_router(resume_router, prefix="/resume", tags=["Resume"])
+app.include_router(skills_router, prefix="/skills", tags=["Skills"])
 
 @app.get("/")
 def root():

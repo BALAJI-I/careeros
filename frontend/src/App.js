@@ -4,31 +4,22 @@ import ResumeUpload from "./components/ResumeUpload";
 function App() {
   const [resumeData, setResumeData] = useState(null);
 
-  const handleUploadSuccess = (data) => {
-    setResumeData(data);
-  };
-
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      
+
       {/* Header */}
       <div className="bg-gray-900 border-b border-gray-800 px-6 py-4">
-        <h1 className="text-2xl font-bold text-indigo-400">
-          CareerOS 🚀
-        </h1>
-        <p className="text-gray-400 text-xs">
-          Your Daily Job Co-Pilot
-        </p>
+        <h1 className="text-2xl font-bold text-indigo-400">CareerOS 🚀</h1>
+        <p className="text-gray-400 text-xs">Your Daily Job Co-Pilot</p>
       </div>
 
-      {/* Main */}
       <div className="flex flex-col items-center justify-center min-h-screen px-4 -mt-16">
-        
+
         {!resumeData ? (
-          <ResumeUpload onUploadSuccess={handleUploadSuccess} />
+          <ResumeUpload onUploadSuccess={setResumeData} />
         ) : (
           <div className="bg-gray-800 rounded-2xl p-8 w-full max-w-2xl">
-            
+
             {/* Success Header */}
             <div className="flex items-center gap-3 mb-6">
               <div className="text-4xl">✅</div>
@@ -42,31 +33,42 @@ function App() {
               </div>
             </div>
 
-            {/* Extracted Text Preview */}
+            {/* Skills Found */}
             <div className="bg-gray-900 rounded-xl p-4 mb-6">
-              <h3 className="text-gray-400 text-xs font-bold mb-2 uppercase">
-                Extracted Text Preview
+              <h3 className="text-gray-400 text-xs font-bold mb-3 uppercase">
+                Skills Found ({resumeData.total_skills})
               </h3>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                {resumeData.text.slice(0, 500)}...
-              </p>
+              <div className="flex flex-wrap gap-2">
+                {resumeData.skills_found && resumeData.skills_found.length > 0 ? (
+                  resumeData.skills_found.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-sm">
+                    No matching skills found. Try a more detailed resume.
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-gray-900 rounded-xl p-4 text-center">
                 <p className="text-2xl font-bold text-indigo-400">
-                  {resumeData.word_count}
+                  {resumeData.total_skills}
                 </p>
-                <p className="text-gray-400 text-xs mt-1">Words Found</p>
+                <p className="text-gray-400 text-xs mt-1">Skills Found</p>
               </div>
               <div className="bg-gray-900 rounded-xl p-4 text-center">
                 <p className="text-2xl font-bold text-green-400">
-                  ✅
+                  {resumeData.word_count}
                 </p>
-                <p className="text-gray-400 text-xs mt-1">
-                  Successfully Parsed
-                </p>
+                <p className="text-gray-400 text-xs mt-1">Words Scanned</p>
               </div>
             </div>
 
@@ -80,7 +82,6 @@ function App() {
 
           </div>
         )}
-
       </div>
     </div>
   );

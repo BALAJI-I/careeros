@@ -25,14 +25,27 @@ function ResumeUpload({ onUploadSuccess }) {
     setLoading(true);
     setError("");
     try {
+      // Step 1: Upload resume
       const formData = new FormData();
       formData.append("file", file);
-      const response = await axios.post(
+      const uploadRes = await axios.post(
         "http://localhost:8000/resume/upload",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      onUploadSuccess(response.data);
+
+      // Step 2: Extract skills
+      const skillsRes = await axios.post(
+        "http://localhost:8000/skills/extract",
+        { text: uploadRes.data.text }
+      );
+
+      // Combine results
+      onUploadSuccess({
+        ...uploadRes.data,
+        ...skillsRes.data,
+      });
+
     } catch (err) {
       setError(err.response?.data?.detail || "Upload failed. Try again.");
     } finally {
@@ -83,7 +96,7 @@ function ResumeUpload({ onUploadSuccess }) {
             : "bg-indigo-600 hover:bg-indigo-500 cursor-pointer"
         }`}
       >
-        {loading ? "Analyzing Resume... ⏳" : "Upload & Analyze 🚀"}
+        {loading ? "Extracting Skills... ⏳" : "Upload & Extract Skills 🚀"}
       </button>
     </div>
   );
