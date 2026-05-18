@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.resume import router as resume_router
 from routes.skills import router as skills_router
 from routes.jobs import router as jobs_router
+from routes.auth import router as auth_router
 
 app = FastAPI(title="CareerOS API")
 
@@ -15,6 +16,7 @@ app.add_middleware(
 )
 
 # Routes
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(resume_router, prefix="/resume", tags=["Resume"])
 app.include_router(skills_router, prefix="/skills", tags=["Skills"])
 app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])
@@ -29,4 +31,4 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "healthy"}    
+    return {"status": "healthy"}

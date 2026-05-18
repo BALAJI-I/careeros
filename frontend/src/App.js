@@ -1,18 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ResumeUpload from "./components/ResumeUpload";
 import JobMatch from "./components/JobMatch";
+import Auth from "./components/Auth";
 
 function App() {
+  const [user, setUser] = useState(null);
   const [resumeData, setResumeData] = useState(null);
   const [showJobs, setShowJobs] = useState(false);
+
+  // Check if user already logged in
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setResumeData(null);
+    setShowJobs(false);
+  };
+
+  // Show auth if not logged in
+  if (!user) {
+    return <Auth onAuthSuccess={setUser} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
 
       {/* Header */}
-      <div className="bg-gray-900 border-b border-gray-800 px-6 py-4">
-        <h1 className="text-2xl font-bold text-indigo-400">CareerOS 🚀</h1>
-        <p className="text-gray-400 text-xs">Your Daily Job Co-Pilot</p>
+      <div className="bg-gray-900 border-b border-gray-800 px-6 py-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-indigo-400">CareerOS 🚀</h1>
+          <p className="text-gray-400 text-xs">Your Daily Job Co-Pilot</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <p className="text-gray-400 text-sm">
+            👋 {user.name}
+          </p>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-gray-400 hover:text-red-400 transition-all"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col items-center justify-center min-h-screen px-4 py-10 -mt-16">
