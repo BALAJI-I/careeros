@@ -34,10 +34,13 @@ function ResumeUpload({ onUploadSuccess }) {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      // Step 2: Extract skills
+      // Step 2: Extract + save skills
       const skillsRes = await axios.post(
         "http://localhost:8000/skills/extract",
-        { text: uploadRes.data.text }
+        {
+          text: uploadRes.data.text,
+          resume_id: uploadRes.data.resume_id
+        }
       );
 
       // Combine results

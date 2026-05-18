@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from database import resumes_collection
+from bson import ObjectId
+from datetime import datetime
 
 router = APIRouter()
 
@@ -27,6 +30,7 @@ SKILLS_DB = [
 
 class ResumeText(BaseModel):
     text: str
+    resume_id: str = None
 
 @router.post("/extract")
 def extract_skills(data: ResumeText):
@@ -35,11 +39,6 @@ def extract_skills(data: ResumeText):
 
     text_lower = data.text.lower()
 
-    # Debug
-    print("=== RESUME TEXT SAMPLE ===")
-    print(text_lower[:300])
-    print("==========================")
-
     found_skills = []
     for skill in SKILLS_DB:
         if skill.lower() in text_lower:
@@ -47,7 +46,19 @@ def extract_skills(data: ResumeText):
 
     found_skills = list(set(found_skills))
 
-    print("Found skills:", found_skills)
+    # Save skills to MongoDB if resume_id provided
+    if data.resume_id:
+        try:
+            resumes_collection.update_one(
+                {"_id": ObjectId(data.resume_id)},
+                {"$set": {
+                    "skills": found_skills,
+                    "total_skills": len(found_skills),
+                    "updated_at": datetime.now()
+                }}
+            )
+        except Exception as e:
+            print(f"Error saving skills: {e}")
 
     return {
         "status": "success",
