@@ -6,6 +6,7 @@ import DailyTasks from "./components/DailyTasks";
 import Progress from "./components/Progress";
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
+import Landing from "./components/Landing";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -14,6 +15,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("resume");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -41,6 +43,10 @@ function App() {
     setIsAdmin(false);
     setShowAdminLogin(false);
   };
+  // Landing Page
+  if (showLanding && !user && !isAdmin) {
+    return <Landing onGetStarted={() => setShowLanding(false)} />;
+  }
 
   // Admin Dashboard
   if (isAdmin) {
