@@ -1,16 +1,19 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+import certifi
 
-# Fix path - load .env from root folder
 load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"))
 
 MONGODB_URL = os.getenv("MONGODB_URL")
 DB_NAME = os.getenv("DB_NAME", "careeros")
 
-print("MongoDB URL:", MONGODB_URL)  # Debug line
+# Fix SSL with certifi
+client = MongoClient(
+    MONGODB_URL,
+    tlsCAFile=certifi.where()
+)
 
-client = MongoClient(MONGODB_URL)
 db = client[DB_NAME]
 
 # Collections

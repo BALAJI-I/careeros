@@ -3,6 +3,7 @@ import ResumeUpload from "./components/ResumeUpload";
 import JobMatch from "./components/JobMatch";
 import Auth from "./components/Auth";
 import DailyTasks from "./components/DailyTasks";
+import Progress from "./components/Progress";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -54,6 +55,7 @@ function App() {
           {[
             { id: "resume", label: "📄 Resume" },
             { id: "tasks", label: "📋 Daily Tasks" },
+            { id: "progress", label: "📊 Progress" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -131,9 +133,7 @@ function App() {
                 </button>
 
                 <button
-                  onClick={() => {
-                    setActiveTab("tasks");
-                  }}
+                  onClick={() => setActiveTab("tasks")}
                   className="w-full py-3 rounded-xl font-bold text-white bg-green-700 hover:bg-green-600 transition-all mb-3"
                 >
                   View Daily Tasks 📋
@@ -191,6 +191,11 @@ function App() {
               />
             )}
           </>
+        )}
+
+        {/* Progress Tab */}
+        {activeTab === "progress" && (
+          <Progress user={user} />
         )}
 
       </div>

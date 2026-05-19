@@ -1,20 +1,32 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Header
 from database import resumes_collection
+from auth import decode_token
 import pdfplumber
 import io
 from datetime import datetime
+from typing import Optional
 
 router = APIRouter()
 
 @router.post("/upload")
-async def upload_resume(file: UploadFile = File(...)):
-
+async def upload_resume(
+    file: UploadFile = File(...),
+    authorization: Optional[str] = Header(None)
+):
     # Check file is PDF
     if not file.filename.endswith(".pdf"):
         raise HTTPException(
             status_code=400,
             detail="Only PDF files allowed"
         )
+
+    # Get user_id from token
+    user_id = None
+    if authorization:
+        token = authorization.replace("Bearer ", "")
+        payload = decode_token(token)
+        if payload:
+            user_id = payload.get("user_id")
 
     # Read file
     contents = await file.read()
@@ -36,10 +48,12 @@ async def upload_resume(file: UploadFile = File(...)):
             detail="Could not extract text from PDF"
         )
 
-    # Check if resume already exists
-    existing = resumes_collection.find_one(
-        {"filename": file.filename}
-    )
+    # Check if resume already exists for this user
+    query = {"filename": file.filename}
+    if user_id:
+        query["user_id"] = user_id
+
+    existing = resumes_collection.find_one(query)
 
     if existing:
         return {
@@ -57,6 +71,7 @@ async def upload_resume(file: UploadFile = File(...)):
         "text": text,
         "pages": num_pages,
         "word_count": len(text.split()),
+        "user_id": user_id,
         "uploaded_at": datetime.now()
     }
     result = resumes_collection.insert_one(resume_doc)

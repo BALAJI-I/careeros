@@ -25,13 +25,19 @@ function ResumeUpload({ onUploadSuccess }) {
     setLoading(true);
     setError("");
     try {
-      // Step 1: Upload resume
+      // Step 1: Upload resume with token
+      const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("file", file);
       const uploadRes = await axios.post(
         "http://localhost:8000/resume/upload",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`
+          }
+        }
       );
 
       // Step 2: Extract + save skills
