@@ -4,16 +4,27 @@ import JobMatch from "./components/JobMatch";
 import Auth from "./components/Auth";
 import DailyTasks from "./components/DailyTasks";
 import Progress from "./components/Progress";
+import AdminLogin from "./components/AdminLogin";
+import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
   const [user, setUser] = useState(null);
   const [resumeData, setResumeData] = useState(null);
   const [showJobs, setShowJobs] = useState(false);
   const [activeTab, setActiveTab] = useState("resume");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) setUser(JSON.parse(savedUser));
+    const adminToken = localStorage.getItem("admin_token");
+    if (adminToken) setIsAdmin(true);
+
+    // Check if URL has /admin
+    if (window.location.hash === "#admin") {
+      setShowAdminLogin(true);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -25,8 +36,30 @@ function App() {
     setActiveTab("resume");
   };
 
+  const handleAdminLogout = () => {
+    localStorage.removeItem("admin_token");
+    setIsAdmin(false);
+    setShowAdminLogin(false);
+  };
+
+  // Admin Dashboard
+  if (isAdmin) {
+    return <AdminDashboard onLogout={handleAdminLogout} />;
+  }
+
+  // Admin Login
+  if (showAdminLogin) {
+    return <AdminLogin onAdminLogin={() => setIsAdmin(true)} />;
+  }
+
+  // User Auth
   if (!user) {
-    return <Auth onAuthSuccess={setUser} />;
+    return (
+      <Auth
+        onAuthSuccess={setUser}
+        onAdminClick={() => setShowAdminLogin(true)}
+      />
+    );
   }
 
   return (
