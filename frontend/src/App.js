@@ -8,6 +8,7 @@ import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import Landing from "./components/Landing";
 import Dashboard from "./components/Dashboard";
+import ResumeTips from "./components/ResumeTips";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -37,7 +38,7 @@ function App() {
     setUser(null);
     setResumeData(null);
     setShowJobs(false);
-    setActiveTab("resume");
+    setActiveTab("dashboard");
     setShowLanding(true);
   };
 
@@ -47,22 +48,18 @@ function App() {
     setShowAdminLogin(false);
   };
 
-  // Landing Page
   if (showLanding && !user && !isAdmin) {
     return <Landing onGetStarted={() => setShowLanding(false)} />;
   }
 
-  // Admin Dashboard
   if (isAdmin) {
     return <AdminDashboard onLogout={handleAdminLogout} />;
   }
 
-  // Admin Login
   if (showAdminLogin) {
     return <AdminLogin onAdminLogin={() => setIsAdmin(true)} />;
   }
 
-  // User Auth
   if (!user) {
     return (
       <Auth
@@ -104,18 +101,19 @@ function App() {
       </div>
 
       {/* Tabs */}
-      <div className="glass border-b border-gray-800/50 px-6">
-        <div className="flex gap-1">
+      <div className="glass border-b border-gray-800/50 px-6 overflow-x-auto">
+        <div className="flex gap-1 min-w-max">
           {[
             { id: "dashboard", label: "🏠 Dashboard" },
             { id: "resume", label: "📄 Resume" },
+            { id: "tips", label: "💡 Resume Tips" },
             { id: "tasks", label: "📋 Daily Tasks" },
             { id: "progress", label: "📊 Progress" },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-4 text-sm font-bold transition-all border-b-2 ${
+              className={`px-5 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
                   ? "border-indigo-500 text-indigo-400"
                   : "border-transparent text-gray-500 hover:text-white"
@@ -129,6 +127,11 @@ function App() {
 
       <div className="flex flex-col items-center px-4 py-10 min-h-screen">
 
+        {/* Dashboard Tab */}
+        {activeTab === "dashboard" && (
+          <Dashboard user={user} onNavigate={setActiveTab} />
+        )}
+
         {/* Resume Tab */}
         {activeTab === "resume" && (
           <>
@@ -139,7 +142,6 @@ function App() {
             {resumeData && !showJobs && (
               <div className="w-full max-w-2xl animate-slide-up">
 
-                {/* Success Header */}
                 <div className="glass rounded-3xl p-8 mb-6 text-center border border-green-700/30">
                   <div className="text-6xl mb-4 animate-float">🎉</div>
                   <h2 className="text-3xl font-black text-white mb-2">
@@ -150,7 +152,6 @@ function App() {
                   </p>
                 </div>
 
-                {/* Stats Row */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="glass rounded-2xl p-6 text-center card-hover border border-indigo-700/20">
                     <p className="text-4xl font-black text-indigo-400 mb-1">
@@ -166,7 +167,6 @@ function App() {
                   </div>
                 </div>
 
-                {/* Skills */}
                 <div className="glass rounded-2xl p-6 mb-6 border border-indigo-700/20">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-black text-lg">
@@ -189,13 +189,18 @@ function App() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={() => setShowJobs(true)}
                     className="w-full py-4 rounded-2xl font-black text-white bg-indigo-600 hover:bg-indigo-500 btn-glow text-lg active:scale-95 transition-all"
                   >
                     Find Matching Jobs 🎯
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("tips")}
+                    className="w-full py-4 rounded-2xl font-black text-white bg-purple-700/80 hover:bg-purple-600 transition-all text-lg active:scale-95"
+                  >
+                    Analyze Resume 💡
                   </button>
                   <button
                     onClick={() => setActiveTab("tasks")}
@@ -226,8 +231,34 @@ function App() {
                 <JobMatch
                   skills={resumeData.skills_found || []}
                   resumeId={resumeData.resume_id}
+                  user={user}
                 />
               </div>
+            )}
+          </>
+        )}
+
+        {/* Resume Tips Tab */}
+        {activeTab === "tips" && (
+          <>
+            {!resumeData ? (
+              <div className="text-center py-20 animate-fade-in">
+                <div className="text-7xl mb-6 animate-float">💡</div>
+                <h3 className="text-2xl font-black text-white mb-3">
+                  Upload Resume First
+                </h3>
+                <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto">
+                  We need your resume to analyze and give you improvement tips
+                </p>
+                <button
+                  onClick={() => setActiveTab("resume")}
+                  className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-indigo-500 btn-glow transition-all"
+                >
+                  Upload Resume 📄
+                </button>
+              </div>
+            ) : (
+              <ResumeTips resumeData={resumeData} />
             )}
           </>
         )}
@@ -242,7 +273,7 @@ function App() {
                   Upload Resume First
                 </h3>
                 <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto">
-                  We need your resume to generate personalized daily tasks based on your skill gaps
+                  We need your resume to generate personalized daily tasks
                 </p>
                 <button
                   onClick={() => setActiveTab("resume")}
@@ -258,13 +289,6 @@ function App() {
               />
             )}
           </>
-        )}
-        {/* Dashboard Tab */}
-        {activeTab === "dashboard" && (
-          <Dashboard
-            user={user}
-            onNavigate={setActiveTab}
-          />
         )}
 
         {/* Progress Tab */}

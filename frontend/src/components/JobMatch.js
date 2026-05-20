@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function JobMatch({ skills, resumeId }) {
+function JobMatch({ skills, resumeId, user }) {
   const [jobs, setJobs] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All");
+  const [applied, setApplied] = useState({});
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -44,6 +45,30 @@ function JobMatch({ skills, resumeId }) {
     }
     setFiltered(result);
   }, [search, filter, locationFilter, jobs]);
+
+  const handleApply = async (job, platform, url) => {
+    // Open job link
+    window.open(url, "_blank");
+
+    // Track application
+    if (user) {
+      try {
+        await axios.post("http://localhost:8000/jobs/apply", {
+          user_id: user.id,
+          job_id: job.job_id,
+          job_title: job.title,
+          company: job.company,
+          platform: platform
+        });
+        setApplied(prev => ({
+          ...prev,
+          [`${job.job_id}_${platform}`]: true
+        }));
+      } catch (err) {
+        console.error("Apply tracking error:", err);
+      }
+    }
+  };
 
   const locations = ["All", ...new Set(jobs.map((j) => j.location))];
   const applyNow = jobs.filter((j) => j.decision === "Apply Now").length;
@@ -270,7 +295,7 @@ function JobMatch({ skills, resumeId }) {
             </div>
 
             {/* Decision */}
-            <div className={`w-full py-3 rounded-xl text-center font-black text-sm ${
+            <div className={`w-full py-3 rounded-xl text-center font-black text-sm mb-3 ${
               job.decision === "Apply Now"
                 ? "bg-green-600/80 text-white"
                 : job.decision === "Apply + Learn"
@@ -279,6 +304,37 @@ function JobMatch({ skills, resumeId }) {
             }`}>
               {job.decision_emoji} {job.decision}
             </div>
+
+              {/* Apply Buttons */}
+              <div className="grid grid-cols-3 gap-2">
+                {Object.entries(job.apply_links || {}).map(([platform, url]) => (
+                  <button
+                    key={platform}
+                    onClick={() => handleApply(job, platform, url)}
+                    className={`py-2.5 rounded-xl text-center text-xs font-bold transition-all active:scale-95 ${
+                      applied[`${job.job_id}_${platform}`]
+                        ? "bg-gray-700 text-gray-400 border border-gray-600"
+                        : platform === "careers"
+                        ? "bg-green-900/50 border border-green-700/50 text-green-300 hover:bg-green-700/50"
+                        : platform === "linkedin"
+                        ? "bg-blue-900/50 border border-blue-700/50 text-blue-300 hover:bg-blue-700/50"
+                        : platform === "naukri"
+                        ? "bg-purple-900/50 border border-purple-700/50 text-purple-300 hover:bg-purple-700/50"
+                        : "bg-orange-900/50 border border-orange-700/50 text-orange-300 hover:bg-orange-700/50"
+                    }`}
+                  >
+                    {applied[`${job.job_id}_${platform}`]
+                      ? "✅ Applied"
+                      : platform === "careers"
+                      ? "🏢 Apply Direct"
+                      : platform === "linkedin"
+                      ? "💼 LinkedIn"
+                      : platform === "naukri"
+                      ? "🔍 Naukri"
+                      : "🎓 Internshala"}
+                  </button>
+                ))}
+              </div>
 
           </div>
         ))}
