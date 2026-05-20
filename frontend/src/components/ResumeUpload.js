@@ -5,6 +5,7 @@ function ResumeUpload({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [dragOver, setDragOver] = useState(false);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -17,6 +18,18 @@ function ResumeUpload({ onUploadSuccess }) {
     }
   };
 
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = e.dataTransfer.files[0];
+    if (dropped && dropped.type === "application/pdf") {
+      setFile(dropped);
+      setError("");
+    } else {
+      setError("Please drop a PDF file only");
+    }
+  };
+
   const handleUpload = async () => {
     if (!file) {
       setError("Please select a file first");
@@ -25,7 +38,6 @@ function ResumeUpload({ onUploadSuccess }) {
     setLoading(true);
     setError("");
     try {
-      // Step 1: Upload resume with token
       const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("file", file);
@@ -40,7 +52,6 @@ function ResumeUpload({ onUploadSuccess }) {
         }
       );
 
-      // Step 2: Extract + save skills
       const skillsRes = await axios.post(
         "http://localhost:8000/skills/extract",
         {
@@ -49,7 +60,6 @@ function ResumeUpload({ onUploadSuccess }) {
         }
       );
 
-      // Combine results
       onUploadSuccess({
         ...uploadRes.data,
         ...skillsRes.data,
@@ -63,14 +73,32 @@ function ResumeUpload({ onUploadSuccess }) {
   };
 
   return (
-    <div className="bg-gray-800 rounded-2xl p-8 w-full max-w-lg">
-      <h2 className="text-2xl font-bold text-white mb-2">
-        Upload Your Resume
-      </h2>
-      <p className="text-gray-400 text-sm mb-6">
-        PDF format only. We will extract your skills automatically.
-      </p>
-      <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center mb-4 hover:border-indigo-400 transition-colors">
+    <div className="w-full max-w-xl animate-slide-up">
+
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="text-6xl mb-4 animate-float">📄</div>
+        <h2 className="text-3xl font-black text-white mb-2">
+          Upload Your Resume
+        </h2>
+        <p className="text-gray-400 text-sm">
+          PDF format only • AI extracts your skills instantly
+        </p>
+      </div>
+
+      {/* Upload Box */}
+      <div
+        onDrop={handleDrop}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        className={`border-2 border-dashed rounded-2xl p-10 text-center mb-4 transition-all cursor-pointer ${
+          dragOver
+            ? "border-indigo-400 bg-indigo-900/20"
+            : file
+            ? "border-green-500 bg-green-900/10"
+            : "border-gray-700 hover:border-indigo-500 glass"
+        }`}
+      >
         <input
           type="file"
           accept=".pdf"
@@ -79,34 +107,68 @@ function ResumeUpload({ onUploadSuccess }) {
           id="resume-upload"
         />
         <label htmlFor="resume-upload" className="cursor-pointer">
-          <div className="text-4xl mb-3">📄</div>
-          <p className="text-gray-300 text-sm">
-            {file ? file.name : "Click to select PDF resume"}
+          <div className="text-5xl mb-4">
+            {file ? "✅" : dragOver ? "📥" : "📤"}
+          </div>
+          <p className="text-white font-bold text-lg mb-1">
+            {file ? file.name : "Drop your resume here"}
           </p>
-          <p className="text-gray-500 text-xs mt-1">
-            {file ? `${(file.size / 1024).toFixed(1)} KB` : "Maximum 10MB"}
+          <p className="text-gray-400 text-sm">
+            {file
+              ? `${(file.size / 1024).toFixed(1)} KB • Ready to upload`
+              : "or click to browse files"}
           </p>
+          {!file && (
+            <div className="mt-4 bg-indigo-600/20 border border-indigo-700/50 rounded-xl px-4 py-2 inline-block">
+              <p className="text-indigo-300 text-xs font-bold">
+                📄 PDF files only • Max 10MB
+              </p>
+            </div>
+          )}
         </label>
       </div>
+
+      {/* Error */}
       {error && (
-        <p className="text-red-400 text-sm mb-4">❌ {error}</p>
+        <div className="bg-red-900/30 border border-red-700/50 rounded-xl px-4 py-3 mb-4">
+          <p className="text-red-300 text-sm">❌ {error}</p>
+        </div>
       )}
-      {file && !error && (
-        <p className="text-green-400 text-sm mb-4">
-          ✅ {file.name} ready to upload
-        </p>
-      )}
+
+      {/* Upload Button */}
       <button
         onClick={handleUpload}
         disabled={loading || !file}
-        className={`w-full py-3 rounded-xl font-bold text-white transition-all ${
+        className={`w-full py-4 rounded-2xl font-black text-white transition-all text-lg ${
           loading || !file
-            ? "bg-gray-600 cursor-not-allowed"
-            : "bg-indigo-600 hover:bg-indigo-500 cursor-pointer"
+            ? "bg-gray-700 cursor-not-allowed opacity-50"
+            : "bg-indigo-600 hover:bg-indigo-500 btn-glow active:scale-95"
         }`}
       >
-        {loading ? "Extracting Skills... ⏳" : "Upload & Extract Skills 🚀"}
+        {loading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="animate-spin">⏳</span>
+            Analyzing Resume...
+          </span>
+        ) : (
+          "Upload & Extract Skills 🚀"
+        )}
       </button>
+
+      {/* Features */}
+      <div className="grid grid-cols-3 gap-3 mt-6">
+        {[
+          { icon: "🧠", text: "AI Skill Detection" },
+          { icon: "🎯", text: "Job Matching" },
+          { icon: "📋", text: "Daily Tasks" },
+        ].map((f, i) => (
+          <div key={i} className="glass rounded-xl p-3 text-center">
+            <p className="text-2xl mb-1">{f.icon}</p>
+            <p className="text-gray-400 text-xs">{f.text}</p>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 }

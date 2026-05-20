@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-function Auth({ onAuthSuccess, onAdminClick }) {
+function Auth({ onAuthSuccess, onAdminClick, onBack }) {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,24 +44,34 @@ function Auth({ onAuthSuccess, onAdminClick }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen animated-bg flex flex-col items-center justify-center px-4">
+
+      {/* Back Button */}
+      <button
+        onClick={onBack}
+        className="absolute top-6 left-6 flex items-center gap-2 text-gray-400 hover:text-white text-sm font-medium transition-all group"
+      >
+        <span className="group-hover:-translate-x-1 transition-all">←</span>
+        Back to Home
+      </button>
 
       {/* Logo */}
       <div className="mb-8 text-center animate-fade-in">
-        <h1 className="text-4xl font-bold text-indigo-400">CareerOS 🚀</h1>
+        <div className="text-4xl mb-2">🚀</div>
+        <h1 className="text-3xl font-black gradient-text">CareerOS</h1>
         <p className="text-gray-400 text-sm mt-2">Your Daily Job Co-Pilot</p>
       </div>
 
       {/* Auth Card */}
-      <div className="bg-gray-800 rounded-2xl p-8 w-full max-w-md border border-gray-700 animate-slide-up">
+      <div className="glass rounded-3xl p-8 w-full max-w-md animate-slide-up">
 
         {/* Tabs */}
-        <div className="flex bg-gray-900 rounded-xl p-1 mb-6">
+        <div className="flex bg-gray-900/50 rounded-2xl p-1 mb-6">
           <button
             onClick={() => { setIsLogin(true); setError(""); }}
-            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
               isLogin
-                ? "bg-indigo-600 text-white"
+                ? "bg-indigo-600 text-white shadow-lg"
                 : "text-gray-400 hover:text-white"
             }`}
           >
@@ -69,9 +79,9 @@ function Auth({ onAuthSuccess, onAdminClick }) {
           </button>
           <button
             onClick={() => { setIsLogin(false); setError(""); }}
-            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
               !isLogin
-                ? "bg-indigo-600 text-white"
+                ? "bg-indigo-600 text-white shadow-lg"
                 : "text-gray-400 hover:text-white"
             }`}
           >
@@ -80,9 +90,14 @@ function Auth({ onAuthSuccess, onAdminClick }) {
         </div>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-white mb-6">
-          {isLogin ? "Welcome back 👋" : "Create your account 🎉"}
+        <h2 className="text-2xl font-black text-white mb-2">
+          {isLogin ? "Welcome back 👋" : "Join CareerOS 🎉"}
         </h2>
+        <p className="text-gray-400 text-sm mb-6">
+          {isLogin
+            ? "Login to continue your job hunting journey"
+            : "Create your free account and start getting hired"}
+        </p>
 
         {/* Name - signup only */}
         {!isLogin && (
@@ -97,7 +112,7 @@ function Auth({ onAuthSuccess, onAdminClick }) {
               onChange={handleChange}
               onKeyPress={handleKeyPress}
               placeholder="Your full name"
-              className="w-full bg-gray-900 text-white px-4 py-3 rounded-xl text-sm outline-none border border-gray-700 focus:border-indigo-500 placeholder-gray-600"
+              className="w-full bg-gray-900/50 text-white px-4 py-3 rounded-xl text-sm outline-none border border-gray-700 focus:border-indigo-500 placeholder-gray-600 transition-all"
             />
           </div>
         )}
@@ -105,7 +120,7 @@ function Auth({ onAuthSuccess, onAdminClick }) {
         {/* Email */}
         <div className="mb-4">
           <label className="text-gray-400 text-xs font-bold mb-2 block uppercase tracking-wider">
-            Email
+            Email Address
           </label>
           <input
             type="email"
@@ -114,7 +129,7 @@ function Auth({ onAuthSuccess, onAdminClick }) {
             onChange={handleChange}
             onKeyPress={handleKeyPress}
             placeholder="your@email.com"
-            className="w-full bg-gray-900 text-white px-4 py-3 rounded-xl text-sm outline-none border border-gray-700 focus:border-indigo-500 placeholder-gray-600"
+            className="w-full bg-gray-900/50 text-white px-4 py-3 rounded-xl text-sm outline-none border border-gray-700 focus:border-indigo-500 placeholder-gray-600 transition-all"
           />
         </div>
 
@@ -129,14 +144,14 @@ function Auth({ onAuthSuccess, onAdminClick }) {
             value={form.password}
             onChange={handleChange}
             onKeyPress={handleKeyPress}
-            placeholder="••••••••"
-            className="w-full bg-gray-900 text-white px-4 py-3 rounded-xl text-sm outline-none border border-gray-700 focus:border-indigo-500 placeholder-gray-600"
+            placeholder="Min 6 characters"
+            className="w-full bg-gray-900/50 text-white px-4 py-3 rounded-xl text-sm outline-none border border-gray-700 focus:border-indigo-500 placeholder-gray-600 transition-all"
           />
         </div>
 
         {/* Error */}
         {error && (
-          <div className="bg-red-900 border border-red-700 rounded-xl px-4 py-3 mb-4">
+          <div className="bg-red-900/50 border border-red-700/50 rounded-xl px-4 py-3 mb-4">
             <p className="text-red-300 text-sm">❌ {error}</p>
           </div>
         )}
@@ -145,35 +160,35 @@ function Auth({ onAuthSuccess, onAdminClick }) {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`w-full py-3 rounded-xl font-bold text-white transition-all ${
+          className={`w-full py-3.5 rounded-xl font-black text-white transition-all text-sm ${
             loading
               ? "bg-gray-600 cursor-not-allowed"
-              : "bg-indigo-600 hover:bg-indigo-500 active:scale-95"
+              : "bg-indigo-600 hover:bg-indigo-500 btn-glow active:scale-95"
           }`}
         >
           {loading
             ? "Please wait... ⏳"
             : isLogin
-            ? "Login 🚀"
-            : "Create Account 🎉"}
+            ? "Login to CareerOS 🚀"
+            : "Create Free Account 🎉"}
         </button>
 
         {/* Switch */}
-        <p className="text-gray-400 text-sm text-center mt-4">
+        <p className="text-gray-400 text-sm text-center mt-5">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             onClick={() => { setIsLogin(!isLogin); setError(""); }}
-            className="text-indigo-400 hover:text-indigo-300 font-bold"
+            className="text-indigo-400 hover:text-indigo-300 font-bold transition-all"
           >
-            {isLogin ? "Sign Up" : "Login"}
+            {isLogin ? "Sign Up Free" : "Login"}
           </button>
         </p>
 
-        {/* Admin Link */}
-        <p className="text-center mt-4">
+        {/* Admin */}
+        <p className="text-center mt-3">
           <button
             onClick={onAdminClick}
-            className="text-gray-600 hover:text-gray-400 text-xs transition-all"
+            className="text-gray-700 hover:text-gray-500 text-xs transition-all"
           >
             Admin Access
           </button>
