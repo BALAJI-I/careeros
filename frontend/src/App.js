@@ -10,6 +10,7 @@ import Landing from "./components/Landing";
 import Dashboard from "./components/Dashboard";
 import ResumeTips from "./components/ResumeTips";
 import LearningResources from "./components/LearningResources";
+import RejectionAnalyzer from "./components/RejectionAnalyzer";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -110,6 +111,7 @@ function App() {
             { id: "tips", label: "💡 Resume Tips" },
             { id: "learning", label: "📚 Learn" },
             { id: "tasks", label: "📋 Daily Tasks" },
+            { id: "rejection", label: "💔 Rejection" },
             { id: "progress", label: "📊 Progress" },
           ].map((tab) => (
             <button
@@ -217,6 +219,12 @@ function App() {
                     View Daily Tasks 📋
                   </button>
                   <button
+                    onClick={() => setActiveTab("rejection")}
+                    className="w-full py-4 rounded-2xl font-black text-white bg-red-700/80 hover:bg-red-600 transition-all text-lg active:scale-95"
+                  >
+                    Rejection Analyzer 💔
+                  </button>
+                  <button
                     onClick={() => setResumeData(null)}
                     className="w-full py-3 rounded-2xl font-bold text-gray-400 glass hover:text-white transition-all text-sm"
                   >
@@ -281,7 +289,7 @@ function App() {
                   Upload Resume First
                 </h3>
                 <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto">
-                  We need your resume to find the right learning resources for you
+                  We need your resume to find the right learning resources
                 </p>
                 <button
                   onClick={() => setActiveTab("resume")}
@@ -322,6 +330,11 @@ function App() {
               />
             )}
           </>
+        )}
+
+        {/* Rejection Analyzer Tab */}
+        {activeTab === "rejection" && (
+          <RejectionAnalyzer />
         )}
 
         {/* Progress Tab */}
