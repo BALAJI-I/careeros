@@ -8,6 +8,7 @@ from routes.tasks import router as tasks_router
 from routes.progress import router as progress_router
 from routes.admin import router as admin_router
 from routes.tips import router as tips_router
+from routes.learning import router as learning_router
 
 app = FastAPI(title="CareerOS API")
 
@@ -19,7 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routes
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(resume_router, prefix="/resume", tags=["Resume"])
 app.include_router(skills_router, prefix="/skills", tags=["Skills"])
@@ -28,6 +28,7 @@ app.include_router(tasks_router, prefix="/tasks", tags=["Tasks"])
 app.include_router(progress_router, prefix="/progress", tags=["Progress"])
 app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 app.include_router(tips_router, prefix="/tips", tags=["Tips"])
+app.include_router(learning_router, prefix="/learning", tags=["Learning"])
 
 @app.get("/")
 def root():

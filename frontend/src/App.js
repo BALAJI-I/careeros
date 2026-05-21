@@ -9,6 +9,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import Landing from "./components/Landing";
 import Dashboard from "./components/Dashboard";
 import ResumeTips from "./components/ResumeTips";
+import LearningResources from "./components/LearningResources";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -107,6 +108,7 @@ function App() {
             { id: "dashboard", label: "🏠 Dashboard" },
             { id: "resume", label: "📄 Resume" },
             { id: "tips", label: "💡 Resume Tips" },
+            { id: "learning", label: "📚 Learn" },
             { id: "tasks", label: "📋 Daily Tasks" },
             { id: "progress", label: "📊 Progress" },
           ].map((tab) => (
@@ -203,6 +205,12 @@ function App() {
                     Analyze Resume 💡
                   </button>
                   <button
+                    onClick={() => setActiveTab("learning")}
+                    className="w-full py-4 rounded-2xl font-black text-white bg-blue-700/80 hover:bg-blue-600 transition-all text-lg active:scale-95"
+                  >
+                    Learning Resources 📚
+                  </button>
+                  <button
                     onClick={() => setActiveTab("tasks")}
                     className="w-full py-4 rounded-2xl font-black text-white bg-green-700/80 hover:bg-green-600 transition-all text-lg active:scale-95"
                   >
@@ -248,7 +256,7 @@ function App() {
                   Upload Resume First
                 </h3>
                 <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto">
-                  We need your resume to analyze and give you improvement tips
+                  We need your resume to analyze and give improvement tips
                 </p>
                 <button
                   onClick={() => setActiveTab("resume")}
@@ -259,6 +267,31 @@ function App() {
               </div>
             ) : (
               <ResumeTips resumeData={resumeData} />
+            )}
+          </>
+        )}
+
+        {/* Learning Resources Tab */}
+        {activeTab === "learning" && (
+          <>
+            {!resumeData ? (
+              <div className="text-center py-20 animate-fade-in">
+                <div className="text-7xl mb-6 animate-float">📚</div>
+                <h3 className="text-2xl font-black text-white mb-3">
+                  Upload Resume First
+                </h3>
+                <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto">
+                  We need your resume to find the right learning resources for you
+                </p>
+                <button
+                  onClick={() => setActiveTab("resume")}
+                  className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-indigo-500 btn-glow transition-all"
+                >
+                  Upload Resume 📄
+                </button>
+              </div>
+            ) : (
+              <LearningResources resumeData={resumeData} />
             )}
           </>
         )}
