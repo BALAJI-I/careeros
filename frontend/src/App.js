@@ -11,6 +11,7 @@ import Dashboard from "./components/Dashboard";
 import ResumeTips from "./components/ResumeTips";
 import LearningResources from "./components/LearningResources";
 import RejectionAnalyzer from "./components/RejectionAnalyzer";
+import InterviewSimulator from "./components/InterviewSimulator";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -112,6 +113,7 @@ function App() {
             { id: "learning", label: "📚 Learn" },
             { id: "tasks", label: "📋 Daily Tasks" },
             { id: "rejection", label: "💔 Rejection" },
+            { id: "interview", label: "🎤 Interview" },
             { id: "progress", label: "📊 Progress" },
           ].map((tab) => (
             <button
@@ -335,6 +337,10 @@ function App() {
         {/* Rejection Analyzer Tab */}
         {activeTab === "rejection" && (
           <RejectionAnalyzer />
+        )}
+        {/* Interview Simulator Tab */}
+        {activeTab === "interview" && (
+          <InterviewSimulator />
         )}
 
         {/* Progress Tab */}
