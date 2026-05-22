@@ -12,6 +12,7 @@ import ResumeTips from "./components/ResumeTips";
 import LearningResources from "./components/LearningResources";
 import RejectionAnalyzer from "./components/RejectionAnalyzer";
 import InterviewSimulator from "./components/InterviewSimulator";
+import Profile from "./components/Profile";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -81,19 +82,25 @@ function App() {
 
       {/* Header */}
       <div className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-gray-800/50">
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => setActiveTab("dashboard")}
+        >
           <span className="text-xl">🚀</span>
           <div>
             <h1 className="text-xl font-black gradient-text">CareerOS</h1>
             <p className="text-gray-500 text-xs">Your Daily Job Co-Pilot</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="glass px-3 py-1.5 rounded-xl">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setActiveTab("profile")}
+            className="glass px-3 py-1.5 rounded-xl hover:border-indigo-500/50 border border-transparent transition-all"
+          >
             <p className="text-gray-300 text-sm font-medium">
-              👋 {user.name}
+              👤 {user.name}
             </p>
-          </div>
+          </button>
           <button
             onClick={handleLogout}
             className="text-xs text-gray-500 hover:text-red-400 transition-all font-medium"
@@ -227,6 +234,12 @@ function App() {
                     Rejection Analyzer 💔
                   </button>
                   <button
+                    onClick={() => setActiveTab("interview")}
+                    className="w-full py-4 rounded-2xl font-black text-white bg-yellow-700/80 hover:bg-yellow-600 transition-all text-lg active:scale-95"
+                  >
+                    Interview Simulator 🎤
+                  </button>
+                  <button
                     onClick={() => setResumeData(null)}
                     className="w-full py-3 rounded-2xl font-bold text-gray-400 glass hover:text-white transition-all text-sm"
                   >
@@ -338,6 +351,7 @@ function App() {
         {activeTab === "rejection" && (
           <RejectionAnalyzer />
         )}
+
         {/* Interview Simulator Tab */}
         {activeTab === "interview" && (
           <InterviewSimulator />
@@ -346,6 +360,11 @@ function App() {
         {/* Progress Tab */}
         {activeTab === "progress" && (
           <Progress user={user} />
+        )}
+
+        {/* Profile Tab */}
+        {activeTab === "profile" && (
+          <Profile user={user} onLogout={handleLogout} />
         )}
 
       </div>

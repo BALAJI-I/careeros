@@ -9,6 +9,7 @@ function JobMatch({ skills, resumeId, user }) {
   const [filter, setFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All");
   const [applied, setApplied] = useState({});
+  const [liveCount, setLiveCount] = useState(0);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -19,6 +20,7 @@ function JobMatch({ skills, resumeId, user }) {
         );
         setJobs(res.data.jobs);
         setFiltered(res.data.jobs);
+        setLiveCount(res.data.live_jobs || 0);
       } catch (err) {
         console.error("Job match error:", err);
       } finally {
@@ -47,15 +49,12 @@ function JobMatch({ skills, resumeId, user }) {
   }, [search, filter, locationFilter, jobs]);
 
   const handleApply = async (job, platform, url) => {
-    // Open job link
     window.open(url, "_blank");
-
-    // Track application
     if (user) {
       try {
         await axios.post("http://localhost:8000/jobs/apply", {
           user_id: user.id,
-          job_id: job.job_id,
+          job_id: String(job.job_id),
           job_title: job.title,
           company: job.company,
           platform: platform
@@ -83,7 +82,7 @@ function JobMatch({ skills, resumeId, user }) {
           Matching Jobs...
         </p>
         <p className="text-gray-500 text-sm">
-          Analyzing your {skills.length} skills
+          Fetching live jobs + matching your {skills.length} skills
         </p>
       </div>
     );
@@ -97,9 +96,16 @@ function JobMatch({ skills, resumeId, user }) {
         <h2 className="text-3xl font-black text-white mb-2">
           Job Matches 🎯
         </h2>
-        <p className="text-gray-400 text-sm">
-          {jobs.length} jobs matched based on your {skills.length} skills
-        </p>
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          <p className="text-gray-400 text-sm">
+            {jobs.length} jobs matched based on your {skills.length} skills
+          </p>
+          {liveCount > 0 && (
+            <span className="bg-green-900/50 border border-green-700/50 text-green-300 text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+              🔴 {liveCount} Live Jobs
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Stats Row */}
@@ -163,7 +169,7 @@ function JobMatch({ skills, resumeId, user }) {
             </button>
           ))}
           <span className="text-gray-700 text-xs py-1">|</span>
-          {locations.map((loc) => (
+          {locations.slice(0, 8).map((loc) => (
             <button
               key={loc}
               onClick={() => setLocationFilter(loc)}
@@ -214,9 +220,19 @@ function JobMatch({ skills, resumeId, user }) {
             {/* Job Header */}
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
-                <h3 className="text-lg font-black text-white mb-1">
-                  {job.title}
-                </h3>
+
+                {/* Title + Live Badge */}
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h3 className="text-lg font-black text-white">
+                    {job.title}
+                  </h3>
+                  {job.is_live && (
+                    <span className="bg-green-900/50 border border-green-700/50 text-green-300 text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">
+                      🔴 Live
+                    </span>
+                  )}
+                </div>
+
                 <p className="text-indigo-400 text-sm font-bold">
                   {job.company}
                 </p>
@@ -305,36 +321,36 @@ function JobMatch({ skills, resumeId, user }) {
               {job.decision_emoji} {job.decision}
             </div>
 
-              {/* Apply Buttons */}
-              <div className="grid grid-cols-3 gap-2">
-                {Object.entries(job.apply_links || {}).map(([platform, url]) => (
-                  <button
-                    key={platform}
-                    onClick={() => handleApply(job, platform, url)}
-                    className={`py-2.5 rounded-xl text-center text-xs font-bold transition-all active:scale-95 ${
-                      applied[`${job.job_id}_${platform}`]
-                        ? "bg-gray-700 text-gray-400 border border-gray-600"
-                        : platform === "careers"
-                        ? "bg-green-900/50 border border-green-700/50 text-green-300 hover:bg-green-700/50"
-                        : platform === "linkedin"
-                        ? "bg-blue-900/50 border border-blue-700/50 text-blue-300 hover:bg-blue-700/50"
-                        : platform === "naukri"
-                        ? "bg-purple-900/50 border border-purple-700/50 text-purple-300 hover:bg-purple-700/50"
-                        : "bg-orange-900/50 border border-orange-700/50 text-orange-300 hover:bg-orange-700/50"
-                    }`}
-                  >
-                    {applied[`${job.job_id}_${platform}`]
-                      ? "✅ Applied"
+            {/* Apply Buttons */}
+            <div className="grid grid-cols-3 gap-2">
+              {Object.entries(job.apply_links || {}).map(([platform, url]) => (
+                <button
+                  key={platform}
+                  onClick={() => handleApply(job, platform, url)}
+                  className={`py-2.5 rounded-xl text-center text-xs font-bold transition-all active:scale-95 ${
+                    applied[`${job.job_id}_${platform}`]
+                      ? "bg-gray-700 text-gray-400 border border-gray-600"
                       : platform === "careers"
-                      ? "🏢 Apply Direct"
+                      ? "bg-green-900/50 border border-green-700/50 text-green-300 hover:bg-green-700/50"
                       : platform === "linkedin"
-                      ? "💼 LinkedIn"
+                      ? "bg-blue-900/50 border border-blue-700/50 text-blue-300 hover:bg-blue-700/50"
                       : platform === "naukri"
-                      ? "🔍 Naukri"
-                      : "🎓 Internshala"}
-                  </button>
-                ))}
-              </div>
+                      ? "bg-purple-900/50 border border-purple-700/50 text-purple-300 hover:bg-purple-700/50"
+                      : "bg-orange-900/50 border border-orange-700/50 text-orange-300 hover:bg-orange-700/50"
+                  }`}
+                >
+                  {applied[`${job.job_id}_${platform}`]
+                    ? "✅ Applied"
+                    : platform === "careers"
+                    ? "🏢 Apply Direct"
+                    : platform === "linkedin"
+                    ? "💼 LinkedIn"
+                    : platform === "naukri"
+                    ? "🔍 Naukri"
+                    : "🎓 Internshala"}
+                </button>
+              ))}
+            </div>
 
           </div>
         ))}
