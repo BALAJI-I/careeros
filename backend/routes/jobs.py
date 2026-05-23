@@ -323,14 +323,7 @@ def fetch_live_jobs(skills: List[str]) -> List[dict]:
     if not RAPIDAPI_KEY:
         return []
     try:
-        priority_skills = [
-            "python", "javascript", "react", "java", "nodejs",
-            "machine learning", "data science", "aws", "docker",
-            "django", "fastapi", "mongodb", "sql", "typescript",
-            "tensorflow", "pytorch", "pandas", "numpy", "git"
-        ]
-        matched_priority = [s for s in skills if s in priority_skills]
-        # Use broader search terms
+        # Map niche skills to broader search terms
         broad_skills = {
             "fastapi": "python",
             "django": "python",
@@ -342,24 +335,36 @@ def fetch_live_jobs(skills: List[str]) -> List[dict]:
             "pandas": "data science",
             "nodejs": "javascript",
             "nextjs": "react",
-            "mongodb": "backend",
-            "postgresql": "backend",
-            "mysql": "backend",
+            "mongodb": "backend developer",
+            "postgresql": "backend developer",
+            "mysql": "backend developer",
             "teamwork": "software engineer",
             "communication": "software engineer",
             "leadership": "software engineer",
             "agile": "software engineer",
             "scrum": "software engineer",
+            "problem solving": "software engineer",
+            "deep learning": "machine learning",
+            "nlp": "machine learning",
+            "c++": "software engineer",
+            "scala": "data engineer",
+            "bash": "devops",
+            "linux": "devops",
+            "docker": "devops",
+            "kubernetes": "devops",
+            "aws": "cloud engineer",
+            "azure": "cloud engineer",
+            "gcp": "cloud engineer",
         }
 
-        # Map niche skills to broader terms
+        # Map skills to broader terms
         mapped_skills = []
-        for skill in skills[:5]:
-            mapped = broad_skills.get(skill, skill)
+        for skill in skills:
+            mapped = broad_skills.get(skill.lower(), skill)
             if mapped not in mapped_skills:
                 mapped_skills.append(mapped)
 
-        # Pick top 2 mapped skills
+        # Pick top 2 unique mapped skills
         query_skills = mapped_skills[:2] if mapped_skills else ["software developer"]
         query = " ".join(query_skills) + " jobs India"
         print(f"Search query: {query}")
@@ -376,7 +381,7 @@ def fetch_live_jobs(skills: List[str]) -> List[dict]:
             "date_posted": "month"
         }
         response = requests.get(
-            url, headers=headers, params=params, timeout=10
+            url, headers=headers, params=params, timeout=30
         )
         data = response.json()
         print(f"Live jobs fetched: {len(data.get('data', []))}")
