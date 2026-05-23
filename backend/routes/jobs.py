@@ -8,8 +8,9 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
+# .env already loaded by main.py
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+print(f"Jobs.py - RAPIDAPI_KEY: {'Found ✅' if RAPIDAPI_KEY else 'NOT FOUND ❌'}")
 
 router = APIRouter()
 
@@ -317,10 +318,52 @@ JOBS_DB = [
 ]
 
 def fetch_live_jobs(skills: List[str]) -> List[dict]:
+    print(f"Fetching live jobs for skills: {skills[:3]}")
+    print(f"API Key status: {'Found ✅' if RAPIDAPI_KEY else 'Missing ❌'}")
     if not RAPIDAPI_KEY:
         return []
     try:
-        query = " ".join(skills[:3]) + " developer India"
+        priority_skills = [
+            "python", "javascript", "react", "java", "nodejs",
+            "machine learning", "data science", "aws", "docker",
+            "django", "fastapi", "mongodb", "sql", "typescript",
+            "tensorflow", "pytorch", "pandas", "numpy", "git"
+        ]
+        matched_priority = [s for s in skills if s in priority_skills]
+        # Use broader search terms
+        broad_skills = {
+            "fastapi": "python",
+            "django": "python",
+            "flask": "python",
+            "pytorch": "machine learning",
+            "tensorflow": "machine learning",
+            "scikit-learn": "data science",
+            "numpy": "data science",
+            "pandas": "data science",
+            "nodejs": "javascript",
+            "nextjs": "react",
+            "mongodb": "backend",
+            "postgresql": "backend",
+            "mysql": "backend",
+            "teamwork": "software engineer",
+            "communication": "software engineer",
+            "leadership": "software engineer",
+            "agile": "software engineer",
+            "scrum": "software engineer",
+        }
+
+        # Map niche skills to broader terms
+        mapped_skills = []
+        for skill in skills[:5]:
+            mapped = broad_skills.get(skill, skill)
+            if mapped not in mapped_skills:
+                mapped_skills.append(mapped)
+
+        # Pick top 2 mapped skills
+        query_skills = mapped_skills[:2] if mapped_skills else ["software developer"]
+        query = " ".join(query_skills) + " jobs India"
+        print(f"Search query: {query}")
+
         url = "https://jsearch.p.rapidapi.com/search"
         headers = {
             "X-RapidAPI-Key": RAPIDAPI_KEY,
@@ -330,28 +373,38 @@ def fetch_live_jobs(skills: List[str]) -> List[dict]:
             "query": query,
             "location": "India",
             "num_pages": "1",
-            "date_posted": "week"
+            "date_posted": "month"
         }
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=10
+        )
         data = response.json()
+        print(f"Live jobs fetched: {len(data.get('data', []))}")
+
         live_jobs = []
         for job in data.get("data", [])[:10]:
             description = job.get("job_description", "").lower()
             required_skills = [s for s in skills if s.lower() in description]
+            title = job.get("job_title", "Unknown")
+            company = job.get("employer_name", "Unknown")
+            title_encoded = title.replace(" ", "+")
+            company_encoded = company.replace(" ", "+")
+            title_dash = title.replace(" ", "-").lower()
+
             live_jobs.append({
                 "id": f"live_{job.get('job_id', '')}",
-                "title": job.get("job_title", "Unknown"),
-                "company": job.get("employer_name", "Unknown"),
+                "title": title,
+                "company": company,
                 "location": f"{job.get('job_city', '')} {job.get('job_country', 'India')}".strip(),
                 "experience": "Not specified",
                 "salary": job.get("job_salary", "Not disclosed") or "Not disclosed",
-                "required_skills": required_skills or skills[:3],
+                "required_skills": required_skills or query_skills,
                 "nice_to_have": [],
                 "is_live": True,
                 "apply_links": {
-                    "careers": job.get("job_apply_link", "#"),
-                    "linkedin": f"https://www.linkedin.com/jobs/search/?keywords={job.get('job_title', '').replace(' ', '+')}",
-                    "naukri": f"https://www.naukri.com/{job.get('job_title', '').replace(' ', '-').lower()}-jobs"
+                    "linkedin": f"https://www.linkedin.com/jobs/search/?keywords={title_encoded}+{company_encoded}&location=India",
+                    "naukri": f"https://www.naukri.com/{title_dash}-jobs?q={title_encoded}&l=India",
+                    "internshala": f"https://internshala.com/jobs/keyword-{title_dash}"
                 }
             })
         return live_jobs
@@ -388,9 +441,12 @@ def match_jobs(data: SkillsInput):
         elif match_percent >= 50:
             decision = "Apply + Learn"
             decision_emoji = "📚"
-        else:
+        elif match_percent > 0:
             decision = "Prepare First"
             decision_emoji = "🎯"
+        else:
+            decision = "Explore Role"
+            decision_emoji = "🔎"
 
         results.append({
             "job_id": job["id"],
@@ -408,7 +464,7 @@ def match_jobs(data: SkillsInput):
             "is_live": False
         })
 
-    # Fetch + process live jobs
+    # Fetch live jobs
     live_jobs = fetch_live_jobs(user_skills)
     for job in live_jobs:
         required = job["required_skills"]
@@ -416,7 +472,9 @@ def match_jobs(data: SkillsInput):
             required = user_skills[:3]
         matched = [s for s in required if s in user_skills]
         missing = [s for s in required if s not in user_skills]
-        match_percent = round((len(matched) / len(required)) * 100) if required else 0
+        match_percent = round(
+            (len(matched) / len(required)) * 100
+        ) if required else 0
 
         if match_percent >= 70:
             decision = "Apply Now"
@@ -424,9 +482,12 @@ def match_jobs(data: SkillsInput):
         elif match_percent >= 50:
             decision = "Apply + Learn"
             decision_emoji = "📚"
-        else:
+        elif match_percent > 0:
             decision = "Prepare First"
             decision_emoji = "🎯"
+        else:
+            decision = "Explore Role"
+            decision_emoji = "🔎"
 
         results.append({
             "job_id": job["id"],
@@ -444,11 +505,8 @@ def match_jobs(data: SkillsInput):
             "is_live": True
         })
 
-    # Sort by match % highest first
+    # Sort by match %
     results.sort(key=lambda x: x["match_percent"], reverse=True)
-
-    # Filter out 0% match
-    results = [r for r in results if r["match_percent"] > 0]
 
     # Save to MongoDB no duplicates
     if data.resume_id:

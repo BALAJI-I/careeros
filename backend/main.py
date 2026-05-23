@@ -1,3 +1,9 @@
+from dotenv import load_dotenv
+import os
+
+# Load .env FIRST before anything else
+load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.resume import router as resume_router
