@@ -16,12 +16,16 @@ import Profile from "./components/Profile";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [resumeData, setResumeData] = useState(null);
+  const [resumeData, setResumeData] = useState(() => {
+    const saved = localStorage.getItem("resumeData");
+    return saved ? JSON.parse(saved) : null;
+  });
   const [showJobs, setShowJobs] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -36,15 +40,16 @@ function App() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    setResumeData(null);
-    setShowJobs(false);
-    setActiveTab("dashboard");
-    setShowLanding(true);
-  };
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("resumeData");
+  setUser(null);
+  setResumeData(null);
+  setShowJobs(false);
+  setActiveTab("dashboard");
+  setShowLanding(true);
+};
 
   const handleAdminLogout = () => {
     localStorage.removeItem("admin_token");
@@ -149,7 +154,10 @@ function App() {
         {activeTab === "resume" && (
           <>
             {!resumeData && (
-              <ResumeUpload onUploadSuccess={setResumeData} />
+              <ResumeUpload onUploadSuccess={(data) => {
+                setResumeData(data);
+                localStorage.setItem("resumeData", JSON.stringify(data));
+              }} />
             )}
 
             {resumeData && !showJobs && (
