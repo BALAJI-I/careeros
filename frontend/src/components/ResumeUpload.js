@@ -63,6 +63,7 @@ function ResumeUpload({ onUploadSuccess }) {
       onUploadSuccess({
         ...uploadRes.data,
         ...skillsRes.data,
+        resume_id: uploadRes.data.resume_id,
       });
 
     } catch (err) {

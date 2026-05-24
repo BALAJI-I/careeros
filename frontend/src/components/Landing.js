@@ -31,7 +31,7 @@ function Landing({ onGetStarted }) {
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-600 rounded-full blur-3xl opacity-10 animate-pulse-slow" />
 
         <div className="bg-indigo-900/50 border border-indigo-700/50 text-indigo-300 text-xs font-bold px-4 py-2 rounded-full mb-8 animate-fade-in">
-          🎯 Built for Indian Students & Freshers
+          🎯 CareerOS — Your AI Co-Pilot For Career Growth.
         </div>
 
         <h1 className="text-6xl font-black text-white mb-6 leading-tight max-w-4xl animate-slide-up">
@@ -163,7 +163,7 @@ function Landing({ onGetStarted }) {
               { icon: "🔥", title: "Daily Streak", desc: "Build a job hunting habit with daily tasks" },
               { icon: "📈", title: "Progress Tracking", desc: "Track your entire job hunting journey" },
               { icon: "🔍", title: "Smart Job Search", desc: "Filter by location, decision, and company" },
-              { icon: "👑", title: "Admin Dashboard", desc: "Full analytics for placement officers" },
+              { icon: "🎤", title: "AI Interview", desc: "Personalized Mock Interviews Based On Your Career Path." },
             ].map((f, i) => (
               <div key={i} className="glass rounded-xl p-5 flex items-start gap-4 card-hover">
                 <span className="text-3xl">{f.icon}</span>
@@ -193,14 +193,14 @@ function Landing({ onGetStarted }) {
             Start Free Today 🎉
           </button>
           <p className="text-gray-600 text-xs mt-4">
-            Free forever • No credit card • Indian job market focused
+            Start Free • No Credit Card Required • Built For Today’s Competitive Job Market
           </p>
         </div>
 
         {/* Footer */}
         <div className="text-gray-600 text-xs text-center">
           <p className="font-bold gradient-text text-sm mb-2">CareerOS</p>
-          <p>Built for Indian Students 🇮🇳 • © 2026 All rights reserved</p>
+          <p>Built for ambitious students and freshers • © 2026 All rights reserved</p>
         </div>
 
       </div>

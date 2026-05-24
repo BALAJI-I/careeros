@@ -46,9 +46,8 @@ function Profile({ user, onLogout }) {
   }
 
   const { user: userData, resume, jobs, tasks } = progress || {};
-
-  // Get resume data from localStorage
   const localResume = JSON.parse(localStorage.getItem("resumeData") || "null");
+  const resumeId = localResume?.resume_id;
 
   return (
     <div className="w-full max-w-3xl animate-fade-in">
@@ -165,15 +164,29 @@ function Profile({ user, onLogout }) {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setShowResume(!showResume)}
-                className="glass px-4 py-2 rounded-xl text-sm font-bold text-indigo-300 hover:text-white border border-indigo-700/30 transition-all"
-              >
-                {showResume ? "Hide ↑" : "View Skills →"}
-              </button>
+
+              {/* Buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowResume(!showResume)}
+                  className="glass px-4 py-2 rounded-xl text-sm font-bold text-indigo-300 hover:text-white border border-indigo-700/30 transition-all"
+                >
+                  {showResume ? "Hide ↑" : "View Skills →"}
+                </button>
+                {resumeId && (
+                  <a
+                    href={`http://localhost:8000/resume/view/${resumeId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="glass px-4 py-2 rounded-xl text-sm font-bold text-green-300 hover:text-white border border-green-700/30 transition-all"
+                  >
+                    📄 View PDF
+                  </a>
+                )}
+              </div>
             </div>
 
-            {/* Skills from localStorage */}
+            {/* Skills Display */}
             {showResume && (
               <div className="glass rounded-xl p-4 border border-indigo-700/20">
                 <p className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider">
