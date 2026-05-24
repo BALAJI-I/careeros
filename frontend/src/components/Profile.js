@@ -7,6 +7,7 @@ function Profile({ user, onLogout }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user.name);
   const [saved, setSaved] = useState(false);
+  const [showResume, setShowResume] = useState(false);
 
   useEffect(() => {
     fetchProgress();
@@ -46,13 +47,15 @@ function Profile({ user, onLogout }) {
 
   const { user: userData, resume, jobs, tasks } = progress || {};
 
+  // Get resume data from localStorage
+  const localResume = JSON.parse(localStorage.getItem("resumeData") || "null");
+
   return (
     <div className="w-full max-w-3xl animate-fade-in">
 
       {/* Profile Header */}
       <div className="glass rounded-3xl p-8 mb-6 border border-indigo-700/20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full blur-3xl opacity-5" />
-
         <div className="relative flex items-start gap-6">
 
           {/* Avatar */}
@@ -98,14 +101,12 @@ function Profile({ user, onLogout }) {
                 </button>
               </div>
             )}
-
             <p className="text-indigo-400 text-sm font-bold mb-1">
               {user.email}
             </p>
             <p className="text-gray-500 text-xs">
               Member since {userData?.member_since} • CareerOS Student
             </p>
-
             {saved && (
               <p className="text-green-400 text-xs mt-2 font-bold">
                 ✅ Profile updated!
@@ -151,19 +152,77 @@ function Profile({ user, onLogout }) {
       <div className="glass rounded-2xl p-6 mb-6 border border-gray-700/20">
         <h3 className="text-white font-black mb-4">📄 Resume</h3>
         {resume?.uploaded ? (
-          <div className="flex items-center gap-4">
-            <div className="bg-green-900/30 border border-green-700/30 rounded-xl p-3">
-              <span className="text-3xl">✅</span>
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-green-900/30 border border-green-700/30 rounded-xl p-3">
+                  <span className="text-3xl">✅</span>
+                </div>
+                <div>
+                  <p className="text-white font-bold">{resume.filename}</p>
+                  <p className="text-gray-400 text-xs mt-1">
+                    {resume.total_skills} skills detected
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowResume(!showResume)}
+                className="glass px-4 py-2 rounded-xl text-sm font-bold text-indigo-300 hover:text-white border border-indigo-700/30 transition-all"
+              >
+                {showResume ? "Hide ↑" : "View Skills →"}
+              </button>
             </div>
-            <div>
-              <p className="text-white font-bold">{resume.filename}</p>
-              <p className="text-gray-400 text-xs mt-1">
-                {resume.total_skills} skills detected
-              </p>
-            </div>
+
+            {/* Skills from localStorage */}
+            {showResume && (
+              <div className="glass rounded-xl p-4 border border-indigo-700/20">
+                <p className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider">
+                  🧠 Detected Skills ({localResume?.total_skills || resume.total_skills})
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {localResume?.skills_found && localResume.skills_found.length > 0 ? (
+                    localResume.skills_found.map((skill, i) => (
+                      <span
+                        key={i}
+                        className="bg-indigo-900/50 border border-indigo-700/50 text-indigo-300 text-xs px-3 py-1.5 rounded-full font-medium"
+                      >
+                        {skill}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">
+                      Skills not available. Please upload resume again.
+                    </p>
+                  )}
+                </div>
+
+                {/* Resume Stats */}
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div className="bg-gray-800/50 rounded-xl p-3 text-center">
+                    <p className="text-xl font-black text-indigo-400">
+                      {localResume?.total_skills || resume.total_skills}
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">Skills Found</p>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-xl p-3 text-center">
+                    <p className="text-xl font-black text-green-400">
+                      {localResume?.word_count || 0}
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">Words Scanned</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          <p className="text-gray-400 text-sm">No resume uploaded yet.</p>
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 text-sm">
+              No resume uploaded yet.
+            </p>
+            <span className="glass text-indigo-300 text-xs px-3 py-1.5 rounded-xl border border-indigo-700/30">
+              Go to Resume tab →
+            </span>
+          </div>
         )}
       </div>
 
