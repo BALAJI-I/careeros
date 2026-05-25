@@ -13,6 +13,7 @@ import LearningResources from "./components/LearningResources";
 import RejectionAnalyzer from "./components/RejectionAnalyzer";
 import InterviewSimulator from "./components/InterviewSimulator";
 import Profile from "./components/Profile";
+import posthog from "posthog-js";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -32,8 +33,13 @@ function App() {
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const u = JSON.parse(savedUser);
+      setUser(u);
       setShowLanding(false);
+      posthog.identify(u.id, {
+        email: u.email,
+        name: u.name
+      });
     }
     const adminToken = localStorage.getItem("admin_token");
     if (adminToken) setIsAdmin(true);
@@ -43,6 +49,8 @@ function App() {
   }, []);
 
   const handleLogout = () => {
+    posthog.capture("user_logout");
+    posthog.reset();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("resumeData");
@@ -62,6 +70,7 @@ function App() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setSidebarOpen(false);
+    posthog.capture("tab_changed", { tab });
   };
 
   if (showLanding && !user && !isAdmin) {
@@ -82,6 +91,11 @@ function App() {
         onAuthSuccess={(u) => {
           setUser(u);
           setShowLanding(false);
+          posthog.identify(u.id, {
+            email: u.email,
+            name: u.name
+          });
+          posthog.capture("user_login");
         }}
         onAdminClick={() => setShowAdminLogin(true)}
         onBack={() => setShowLanding(true)}
@@ -208,7 +222,6 @@ function App() {
         {/* Top Header */}
         <div className="glass sticky top-0 z-20 px-6 py-4 flex justify-between items-center border-b border-gray-800/50">
           <div className="flex items-center gap-3">
-            {/* Sidebar Toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="glass p-2 rounded-xl hover:bg-white/10 transition-all"
@@ -219,7 +232,6 @@ function App() {
                 <div className={`w-4 h-0.5 bg-gray-400 rounded transition-all ${sidebarOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
               </div>
             </button>
-
             <div
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => handleTabChange("dashboard")}
@@ -232,14 +244,12 @@ function App() {
             </div>
           </div>
 
-          {/* Active Tab Label */}
           <div className="glass px-3 py-1.5 rounded-xl">
             <p className="text-gray-300 text-sm font-bold">
               {tabs.find(t => t.id === activeTab)?.icon} {tabs.find(t => t.id === activeTab)?.label || "Profile"}
             </p>
           </div>
 
-          {/* User */}
           <button
             onClick={() => handleTabChange("profile")}
             className="glass px-3 py-1.5 rounded-xl hover:border-indigo-500/50 border border-transparent transition-all"
@@ -265,6 +275,9 @@ function App() {
                 <ResumeUpload onUploadSuccess={(data) => {
                   setResumeData(data);
                   localStorage.setItem("resumeData", JSON.stringify(data));
+                  posthog.capture("resume_uploaded", {
+                    skills_count: data.total_skills
+                  });
                 }} />
               )}
 
@@ -306,7 +319,13 @@ function App() {
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <button onClick={() => setShowJobs(true)} className="w-full py-4 rounded-2xl font-black text-white bg-indigo-600 hover:bg-indigo-500 btn-glow text-lg active:scale-95 transition-all">
+                    <button
+                      onClick={() => {
+                        setShowJobs(true);
+                        posthog.capture("find_jobs_clicked");
+                      }}
+                      className="w-full py-4 rounded-2xl font-black text-white bg-indigo-600 hover:bg-indigo-500 btn-glow text-lg active:scale-95 transition-all"
+                    >
                       Find Matching Jobs 🎯
                     </button>
                     <button onClick={() => handleTabChange("tips")} className="w-full py-4 rounded-2xl font-black text-white bg-purple-700/80 hover:bg-purple-600 transition-all text-lg active:scale-95">
