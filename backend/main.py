@@ -19,6 +19,7 @@ from routes.rejection import router as rejection_router
 from routes.interview import router as interview_router
 from routes.email import router as email_router
 from routes.projects import router as projects_router
+from routes.roadmap import router as roadmap_router
 
 app = FastAPI(title="CareerOS API")
 
@@ -44,6 +45,7 @@ app.include_router(rejection_router, prefix="/rejection", tags=["Rejection"])
 app.include_router(interview_router, prefix="/interview", tags=["Interview"])
 app.include_router(email_router, prefix="/email", tags=["Email"])
 app.include_router(projects_router, prefix="/projects", tags=["Projects"])
+app.include_router(roadmap_router, prefix="/roadmap", tags=["Roadmap"])
 
 @app.get("/")
 def root():

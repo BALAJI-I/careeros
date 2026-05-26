@@ -15,6 +15,7 @@ import InterviewSimulator from "./components/InterviewSimulator";
 import Profile from "./components/Profile";
 import posthog from "posthog-js";
 import ProjectRecommendations from "./components/ProjectRecommendations";
+import CareerRoadmap from "./components/CareerRoadmap";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -106,6 +107,7 @@ function App() {
 
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: "🏠" },
+    { id: "roadmap", label: "Roadmap", icon: "🗺️" },
     { id: "resume", label: "Resume", icon: "📄" },
     { id: "tips", label: "Resume Tips", icon: "💡" },
     { id: "learning", label: "Learn", icon: "📚" },
@@ -362,6 +364,10 @@ function App() {
                 </div>
               )}
             </>
+          )}
+                    {/* Roadmap Tab */}
+          {activeTab === "roadmap" && (
+            <CareerRoadmap resumeData={resumeData} />
           )}
                   {/* Projects Tab */}
         {activeTab === "projects" && (
