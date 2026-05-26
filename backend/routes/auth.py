@@ -50,6 +50,19 @@ def signup(data: SignupRequest):
         "email": data.email,
         "name": data.name
     })
+    # Send welcome email
+    try:
+        import resend
+        import os
+        resend.api_key = os.getenv("RESEND_API_KEY")
+        resend.Emails.send({
+            "from": "CareerOS <onboarding@resend.dev>",
+            "to": data.email,
+            "subject": "Welcome to CareerOS 🚀",
+            "html": f"<h1>Welcome {data.name}!</h1><p>Your CareerOS journey starts now. Upload your resume to get started.</p>"
+        })
+    except Exception as e:
+        print(f"Welcome email error: {e}")
 
     return {
         "status": "success",
