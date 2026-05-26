@@ -18,6 +18,7 @@ from routes.learning import router as learning_router
 from routes.rejection import router as rejection_router
 from routes.interview import router as interview_router
 from routes.email import router as email_router
+from routes.projects import router as projects_router
 
 app = FastAPI(title="CareerOS API")
 
@@ -42,6 +43,7 @@ app.include_router(learning_router, prefix="/learning", tags=["Learning"])
 app.include_router(rejection_router, prefix="/rejection", tags=["Rejection"])
 app.include_router(interview_router, prefix="/interview", tags=["Interview"])
 app.include_router(email_router, prefix="/email", tags=["Email"])
+app.include_router(projects_router, prefix="/projects", tags=["Projects"])
 
 @app.get("/")
 def root():

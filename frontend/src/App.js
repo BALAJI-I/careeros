@@ -14,6 +14,7 @@ import RejectionAnalyzer from "./components/RejectionAnalyzer";
 import InterviewSimulator from "./components/InterviewSimulator";
 import Profile from "./components/Profile";
 import posthog from "posthog-js";
+import ProjectRecommendations from "./components/ProjectRecommendations";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -112,6 +113,7 @@ function App() {
     { id: "rejection", label: "Rejection", icon: "💔" },
     { id: "interview", label: "Interview", icon: "🎤" },
     { id: "progress", label: "Progress", icon: "📊" },
+    { id: "projects", label: "Projects", icon: "💻" },
   ];
 
   return (
@@ -361,6 +363,30 @@ function App() {
               )}
             </>
           )}
+                  {/* Projects Tab */}
+        {activeTab === "projects" && (
+          <>
+            {!resumeData ? (
+              <div className="text-center py-20 animate-fade-in">
+                <div className="text-7xl mb-6 animate-float">💻</div>
+                <h3 className="text-2xl font-black text-white mb-3">
+                  Upload Resume First
+                </h3>
+                <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto">
+                  We need your resume to recommend the right projects
+                </p>
+                <button
+                  onClick={() => handleTabChange("resume")}
+                  className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-indigo-500 btn-glow transition-all"
+                >
+                  Upload Resume 📄
+                </button>
+              </div>
+            ) : (
+              <ProjectRecommendations resumeData={resumeData} />
+            )}
+          </>
+        )}
 
           {/* Resume Tips */}
           {activeTab === "tips" && (
