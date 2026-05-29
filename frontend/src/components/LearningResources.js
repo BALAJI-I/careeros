@@ -14,7 +14,7 @@ function LearningResources({ resumeData }) {
     try {
       const missingSkills = getMissingSkills();
       const res = await axios.post(
-        "http://localhost:8000/learning/resources",
+        "https://careeros-0w27.onrender.com/learning/resources",
         { missing_skills: missingSkills }
       );
       setResources(res.data.resources);

@@ -22,7 +22,7 @@ function CareerRoadmap({ resumeData }) {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:8000/roadmap/generate",
+        "https://careeros-0w27.onrender.com/roadmap/generate",
         {
           role: selectedRole,
           existing_skills: resumeData?.skills_found || []

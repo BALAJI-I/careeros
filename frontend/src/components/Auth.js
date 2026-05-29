@@ -21,8 +21,8 @@ function Auth({ onAuthSuccess, onAdminClick, onBack }) {
     setError("");
     try {
       const url = isLogin
-        ? "http://localhost:8000/auth/login"
-        : "http://localhost:8000/auth/signup";
+        ? "https://careeros-0w27.onrender.com/auth/login"
+        : "https://careeros-0w27.onrender.com/auth/signup";
 
       const payload = isLogin
         ? { email: form.email, password: form.password }

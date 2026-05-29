@@ -26,7 +26,7 @@ function InterviewSimulator() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:8000/interview/start",
+        "https://careeros-0w27.onrender.com/interview/start",
         { role }
       );
       setQuestions(res.data.questions);
@@ -45,7 +45,7 @@ function InterviewSimulator() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:8000/interview/evaluate",
+        "https://careeros-0w27.onrender.com/interview/evaluate",
         {
           role,
           question: questions[currentQ],

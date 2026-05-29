@@ -15,7 +15,7 @@ function DailyTasks({ user, missingSkills }) {
   const generateTasks = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/tasks/generate",
+        "https://careeros-0w27.onrender.com/tasks/generate",
         {
           user_id: user.id,
           missing_skills: missingSkills || []
@@ -36,7 +36,7 @@ function DailyTasks({ user, missingSkills }) {
     if (tasks[index].completed) return;
     try {
       const res = await axios.post(
-        "http://localhost:8000/tasks/complete",
+        "https://careeros-0w27.onrender.com/tasks/complete",
         {
           user_id: user.id,
           task_index: index

@@ -15,7 +15,7 @@ function JobMatch({ skills, resumeId, user }) {
     const fetchJobs = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:8000/jobs/match",
+          "https://careeros-0w27.onrender.com/jobs/match",
           { skills, resume_id: resumeId }
         );
         setJobs(res.data.jobs);
@@ -52,7 +52,7 @@ function JobMatch({ skills, resumeId, user }) {
     window.open(url, "_blank");
     if (user) {
       try {
-        await axios.post("http://localhost:8000/jobs/apply", {
+        await axios.post("https://careeros-0w27.onrender.com/jobs/apply", {
           user_id: user.id,
           job_id: String(job.job_id),
           job_title: job.title,

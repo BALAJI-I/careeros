@@ -18,7 +18,7 @@ function RejectionAnalyzer() {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:8000/rejection/analyze",
+        "https://careeros-0w27.onrender.com/rejection/analyze",
         {
           email_text: emailText,
           job_title: jobTitle,

@@ -42,7 +42,7 @@ function ResumeUpload({ onUploadSuccess }) {
       const formData = new FormData();
       formData.append("file", file);
       const uploadRes = await axios.post(
-        "http://localhost:8000/resume/upload",
+        "https://careeros-0w27.onrender.com/resume/upload",
         formData,
         {
           headers: {
@@ -53,7 +53,7 @@ function ResumeUpload({ onUploadSuccess }) {
       );
 
       const skillsRes = await axios.post(
-        "http://localhost:8000/skills/extract",
+        "https://careeros-0w27.onrender.com/skills/extract",
         {
           text: uploadRes.data.text,
           resume_id: uploadRes.data.resume_id

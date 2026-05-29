@@ -12,7 +12,7 @@ function Dashboard({ user, onNavigate }) {
   const fetchProgress = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/progress/${user.id}`
+        `https://careeros-0w27.onrender.com/progress/${user.id}`
       );
       setProgress(res.data);
     } catch (err) {

@@ -22,7 +22,7 @@ function ProjectRecommendations({ resumeData }) {
       );
 
       const res = await axios.post(
-        "http://localhost:8000/projects/recommend",
+        "https://careeros-0w27.onrender.com/projects/recommend",
         {
           missing_skills: missingSkills.slice(0, 4),
           existing_skills: userSkills.slice(0, 3)

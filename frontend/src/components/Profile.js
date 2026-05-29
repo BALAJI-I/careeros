@@ -16,7 +16,7 @@ function Profile({ user, onLogout }) {
   const fetchProgress = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/progress/${user.id}`
+        `https://careeros-0w27.onrender.com/progress/${user.id}`
       );
       setProgress(res.data);
     } catch (err) {
@@ -175,7 +175,7 @@ function Profile({ user, onLogout }) {
                 </button>
                 {resumeId && (
                   <a
-                    href={`http://localhost:8000/resume/view/${resumeId}`}
+                    href={`https://careeros-0w27.onrender.com/resume/view/${resumeId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="glass px-4 py-2 rounded-xl text-sm font-bold text-green-300 hover:text-white border border-green-700/30 transition-all"

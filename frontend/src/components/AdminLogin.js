@@ -12,7 +12,7 @@ function AdminLogin({ onAdminLogin }) {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:8000/admin/login",
+        "https://careeros-0w27.onrender.com/admin/login",
         { email, password }
       );
       localStorage.setItem("admin_token", res.data.token);

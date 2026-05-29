@@ -12,7 +12,7 @@ function ResumeTips({ resumeData }) {
   const analyzResume = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:8000/tips/analyze",
+        "https://careeros-0w27.onrender.com/tips/analyze",
         {
           text: resumeData.text,
           skills: resumeData.skills_found || [],

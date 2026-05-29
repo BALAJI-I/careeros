@@ -16,7 +16,7 @@ function AdminDashboard({ onLogout }) {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/admin/stats");
+      const res = await axios.get("https://careeros-0w27.onrender.com/admin/stats");
       setStats(res.data.stats);
     } catch (err) {
       console.error("Stats error:", err);
@@ -27,7 +27,7 @@ function AdminDashboard({ onLogout }) {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/admin/users");
+      const res = await axios.get("https://careeros-0w27.onrender.com/admin/users");
       setUsers(res.data.users);
     } catch (err) {
       console.error("Users error:", err);
@@ -36,7 +36,7 @@ function AdminDashboard({ onLogout }) {
 
   const fetchResumes = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/admin/resumes");
+      const res = await axios.get("https://careeros-0w27.onrender.com/admin/resumes");
       setResumes(res.data.resumes);
     } catch (err) {
       console.error("Resumes error:", err);
