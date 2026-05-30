@@ -11,7 +11,8 @@ DB_NAME = os.getenv("DB_NAME", "careeros")
 # Fix SSL with certifi
 client = MongoClient(
     MONGODB_URL,
-    tlsCAFile=certifi.where()
+    tlsCAFile=certifi.where(),
+    tlsAllowInvalidCertificates=True
 )
 
 db = client[DB_NAME]
