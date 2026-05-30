@@ -26,12 +26,16 @@ app = FastAPI(title="CareerOS API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://careeros-sq5t-oxkcihi54-balaji-is-projects.vercel.app",
+        "https://careeros.vercel.app",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(resume_router, prefix="/resume", tags=["Resume"])
 app.include_router(skills_router, prefix="/skills", tags=["Skills"])
