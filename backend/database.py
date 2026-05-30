@@ -1,17 +1,16 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-import certifi
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"))
 
 MONGODB_URL = os.getenv("MONGODB_URL")
 DB_NAME = os.getenv("DB_NAME", "careeros")
 
-# Fix SSL with certifi
+# Fix SSL for Python 3.14
 client = MongoClient(
     MONGODB_URL,
-    tlsCAFile=certifi.where(),
+    tls=True,
     tlsAllowInvalidCertificates=True
 )
 
